@@ -21,10 +21,9 @@
     <!-- android:layout_marginTop="?android:attr/actionBarSize"-->
         <fragment
             android:id="@+id/fragment_drawer"
-            android:name="MaterialDrawer.NavigationDrawerFragment"
+            class="MaterialDrawer.NavigationDrawerFragment"
             android:layout_width="@dimen/navigation_drawer_width"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            app:layout="@layout/FragmentNavigationDrawer" />
+            android:layout_gravity="start" />
     </android.support.v4.widget.DrawerLayout>
 </RelativeLayout>

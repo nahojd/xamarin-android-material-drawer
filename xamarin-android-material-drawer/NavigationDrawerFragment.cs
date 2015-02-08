@@ -30,156 +30,156 @@ namespace MaterialDrawer
 
 		public ActionBarDrawerToggle ActionBarDrawerToggle { get; set; }
 
-		public override void OnCreate(Bundle savedInstanceState)
+		public override void OnCreate (Bundle savedInstanceState)
 		{
-			base.OnCreate(savedInstanceState);
+			base.OnCreate (savedInstanceState);
 
-			userLearnedDrawer = Convert.ToBoolean(ReadSharedSetting(Activity, PrefUserLearnedDrawer, "false"));
+			userLearnedDrawer = Convert.ToBoolean (ReadSharedSetting (Activity, PrefUserLearnedDrawer, "false"));
 			if (savedInstanceState != null) {
-				currentSelectedPosition = savedInstanceState.GetInt(StateSelectedPosition);
+				currentSelectedPosition = savedInstanceState.GetInt (StateSelectedPosition);
 				fromSavedInstanceState = true;
 			}
 		}
 
-		public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
-			var view = inflater.Inflate(Resource.Layout.FragmentNavigationDrawer, container, false);
-			drawerList = view.FindViewById<RecyclerView>(Resource.Id.drawerList);
-			var layoutManager = new LinearLayoutManager(Activity);
+			var view = inflater.Inflate (Resource.Layout.FragmentNavigationDrawer, container, false);
+			drawerList = view.FindViewById<RecyclerView> (Resource.Id.drawerList);
+			var layoutManager = new LinearLayoutManager (Activity);
 			layoutManager.Orientation = LinearLayoutManager.Vertical;
-			drawerList.SetLayoutManager(layoutManager);
+			drawerList.SetLayoutManager (layoutManager);
 			drawerList.HasFixedSize = true;
 
-			var navigationItems = GetMenu();
-			var adapter = new NavigationDrawerAdapter(navigationItems);
+			var navigationItems = GetMenu ();
+			var adapter = new NavigationDrawerAdapter (navigationItems);
 			adapter.NavigationDrawerCallbacks = this;
-			drawerList.SetAdapter(adapter);
-			SelectItem(currentSelectedPosition);
+			drawerList.SetAdapter (adapter);
+			SelectItem (currentSelectedPosition);
 			return view;
 		}
 
-		public override void OnAttach(Activity activity)
+		public override void OnAttach (Activity activity)
 		{
-			base.OnAttach(activity);
+			base.OnAttach (activity);
 
 			if (!(activity is INavigationDrawerCallbacks))
-				throw new InvalidCastException("Activity must implement INavigationDrawerCallbacks.");
+				throw new InvalidCastException ("Activity must implement INavigationDrawerCallbacks.");
 
 			callbacks = activity as INavigationDrawerCallbacks;
 		}
 
 
 
-		public void Setup(int fragmentId, DrawerLayout drawerLayout, Toolbar toolbar)
+		public void Setup (int fragmentId, DrawerLayout drawerLayout, Toolbar toolbar)
 		{
-			fragmentContainerView = Activity.FindViewById(fragmentId);
+			fragmentContainerView = Activity.FindViewById (fragmentId);
 			DrawerLayout = drawerLayout;
-			drawerLayout.SetStatusBarBackgroundColor(Resources.GetColor(Resource.Color.myPrimaryDarkColor));
+			drawerLayout.SetStatusBarBackgroundColor (Resources.GetColor (Resource.Color.myPrimaryDarkColor));
 
-			ActionBarDrawerToggle = new MyActionBarDrawerToggle(Activity, drawerLayout, toolbar, Resource.String.drawer_open, Resource.String.drawer_close) {
+			ActionBarDrawerToggle = new MyActionBarDrawerToggle (Activity, drawerLayout, toolbar, Resource.String.drawer_open, Resource.String.drawer_close) {
 				OnDrawerClosedCallback = (view) => {
 					if (IsAdded)
 						return;
-					Activity.InvalidateOptionsMenu();
+					Activity.InvalidateOptionsMenu ();
 				},
 				OnDrawerOpenedCallback = (view) => {
 					if (!IsAdded)
 						return;
 					if (!userLearnedDrawer) {
 						userLearnedDrawer = true;
-						SaveSharedSetting(Activity, PrefUserLearnedDrawer, "true");
+						SaveSharedSetting (Activity, PrefUserLearnedDrawer, "true");
 					}
 
-					Activity.InvalidateOptionsMenu();
+					Activity.InvalidateOptionsMenu ();
 				}
 			};
 
 			if (!userLearnedDrawer && !fromSavedInstanceState)
-				drawerLayout.OpenDrawer(fragmentContainerView);
+				drawerLayout.OpenDrawer (fragmentContainerView);
 
-			drawerLayout.Post(ActionBarDrawerToggle.SyncState);
+			drawerLayout.Post (ActionBarDrawerToggle.SyncState);
 
-			drawerLayout.SetDrawerListener(ActionBarDrawerToggle);
+			drawerLayout.SetDrawerListener (ActionBarDrawerToggle);
 		}
 
-		public void OpenDrawer()
+		public void OpenDrawer ()
 		{
-			DrawerLayout.OpenDrawer(fragmentContainerView);
+			DrawerLayout.OpenDrawer (fragmentContainerView);
 		}
 
-		public void CloseDrawer()
+		public void CloseDrawer ()
 		{
-			DrawerLayout.CloseDrawer(fragmentContainerView);
+			DrawerLayout.CloseDrawer (fragmentContainerView);
 		}
 
-		public override void OnDetach()
+		public override void OnDetach ()
 		{
-			base.OnDetach();
+			base.OnDetach ();
 			callbacks = null;
 		}
 
-		public List<NavigationItem> GetMenu()
+		public List<NavigationItem> GetMenu ()
 		{
 			var items = new List<NavigationItem> {
-				new NavigationItem { Text = "item 1", Drawable = Resources.GetDrawable(Resource.Drawable.ic_menu_check) },
-				new NavigationItem { Text = "item 2", Drawable = Resources.GetDrawable(Resource.Drawable.ic_menu_check) },
-				new NavigationItem { Text = "item 3", Drawable = Resources.GetDrawable(Resource.Drawable.ic_menu_check) },
+				new NavigationItem { Text = "item 1", Drawable = Resources.GetDrawable (Resource.Drawable.ic_menu_check) },
+				new NavigationItem { Text = "item 2", Drawable = Resources.GetDrawable (Resource.Drawable.ic_menu_check) },
+				new NavigationItem { Text = "item 3", Drawable = Resources.GetDrawable (Resource.Drawable.ic_menu_check) },
 			};
 			return items;
 		}
 
-		void SelectItem(int position)
+		void SelectItem (int position)
 		{
 			currentSelectedPosition = position;
 			if (DrawerLayout != null) {
-				DrawerLayout.CloseDrawer(fragmentContainerView);
+				DrawerLayout.CloseDrawer (fragmentContainerView);
 			}
 			if (callbacks != null) {
-				callbacks.OnNavigationDrawerItemSelected(position);
+				callbacks.OnNavigationDrawerItemSelected (position);
 			}
-			((NavigationDrawerAdapter)drawerList.GetAdapter()).SelectPosition(position);
+			((NavigationDrawerAdapter)drawerList.GetAdapter ()).SelectPosition (position);
 		}
 
 		public bool IsDrawerOpen {
-			get { return DrawerLayout != null && DrawerLayout.IsDrawerOpen(fragmentContainerView); }
+			get { return DrawerLayout != null && DrawerLayout.IsDrawerOpen (fragmentContainerView); }
 		}
 
-		public override void OnConfigurationChanged(Android.Content.Res.Configuration newConfig)
+		public override void OnConfigurationChanged (Android.Content.Res.Configuration newConfig)
 		{
-			base.OnConfigurationChanged(newConfig);
-			ActionBarDrawerToggle.OnConfigurationChanged(newConfig);
+			base.OnConfigurationChanged (newConfig);
+			ActionBarDrawerToggle.OnConfigurationChanged (newConfig);
 		}
 
-		public override void OnSaveInstanceState(Bundle outState)
+		public override void OnSaveInstanceState (Bundle outState)
 		{
-			base.OnSaveInstanceState(outState);
-			outState.PutInt(StateSelectedPosition, currentSelectedPosition);
+			base.OnSaveInstanceState (outState);
+			outState.PutInt (StateSelectedPosition, currentSelectedPosition);
 		}
 
-		public void OnNavigationDrawerItemSelected(int position)
+		public void OnNavigationDrawerItemSelected (int position)
 		{
-			SelectItem(position);
+			SelectItem (position);
 		}
 
-		public static string ReadSharedSetting(Context ctx, string settingName, string defaultValue)
+		public static string ReadSharedSetting (Context ctx, string settingName, string defaultValue)
 		{
-			var sharedPref = ctx.GetSharedPreferences(PreferencesFile, FileCreationMode.Private);
-			return sharedPref.GetString(settingName, defaultValue);
+			var sharedPref = ctx.GetSharedPreferences (PreferencesFile, FileCreationMode.Private);
+			return sharedPref.GetString (settingName, defaultValue);
 		}
 
-		public static void SaveSharedSetting(Context ctx, string settingName, string settingValue)
+		public static void SaveSharedSetting (Context ctx, string settingName, string settingValue)
 		{
-			var sharedPref = ctx.GetSharedPreferences(PreferencesFile, FileCreationMode.Private);
-			var editor = sharedPref.Edit();
-			editor.PutString(settingName, settingValue);
-			editor.Apply();
+			var sharedPref = ctx.GetSharedPreferences (PreferencesFile, FileCreationMode.Private);
+			var editor = sharedPref.Edit ();
+			editor.PutString (settingName, settingValue);
+			editor.Apply ();
 		}
 	}
 
 	public class MyActionBarDrawerToggle : ActionBarDrawerToggle
 	{
-		public MyActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int drawer_open, int drawer_close)
-			: base(activity, drawerLayout, toolbar, drawer_open, drawer_close)
+		public MyActionBarDrawerToggle (Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int drawer_open, int drawer_close)
+			: base (activity, drawerLayout, toolbar, drawer_open, drawer_close)
 		{
 		}
 
@@ -187,20 +187,20 @@ namespace MaterialDrawer
 
 		public Action<View> OnDrawerOpenedCallback { get; set; }
 
-		public override void OnDrawerClosed(View drawerView)
+		public override void OnDrawerClosed (View drawerView)
 		{
-			base.OnDrawerClosed(drawerView);
+			base.OnDrawerClosed (drawerView);
 
 			if (OnDrawerClosedCallback != null)
-				OnDrawerClosedCallback(drawerView);
+				OnDrawerClosedCallback (drawerView);
 		}
 
-		public override void OnDrawerOpened(View drawerView)
+		public override void OnDrawerOpened (View drawerView)
 		{
-			base.OnDrawerOpened(drawerView);
+			base.OnDrawerOpened (drawerView);
 
 			if (OnDrawerOpenedCallback != null)
-				OnDrawerOpenedCallback(drawerView);
+				OnDrawerOpenedCallback (drawerView);
 		}
 	}
 }
